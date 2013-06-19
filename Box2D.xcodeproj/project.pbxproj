@@ -284,6 +284,7 @@
 		CE800CE6176FF3A500F39974 /* HelloWorldScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE800CE5176FF3A500F39974 /* HelloWorldScene.cpp */; };
 		CE800CE8176FF3A500F39974 /* blocks.png in Resources */ = {isa = PBXBuildFile; fileRef = CE800CE7176FF3A500F39974 /* blocks.png */; };
 		CE80107917700BB100F39974 /* tructhang1.png in Resources */ = {isa = PBXBuildFile; fileRef = CE80107817700BB100F39974 /* tructhang1.png */; };
+		CEE443EE1771A33200B3E895 /* paddle.png in Resources */ = {isa = PBXBuildFile; fileRef = CEE443ED1771A33200B3E895 /* paddle.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -884,6 +885,7 @@
 		CE800CE5176FF3A500F39974 /* HelloWorldScene.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = HelloWorldScene.cpp; path = Classes/HelloWorldScene.cpp; sourceTree = "<group>"; };
 		CE800CE7176FF3A500F39974 /* blocks.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blocks.png; path = Resources/blocks.png; sourceTree = "<group>"; };
 		CE80107817700BB100F39974 /* tructhang1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = tructhang1.png; path = Resources/tructhang1.png; sourceTree = "<group>"; };
+		CEE443ED1771A33200B3E895 /* paddle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = paddle.png; path = Resources/paddle.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -954,6 +956,7 @@
 		CE80094D176FF39200F39974 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				CEE443ED1771A33200B3E895 /* paddle.png */,
 				CE80107817700BB100F39974 /* tructhang1.png */,
 				CE80094E176FF39200F39974 /* CloseNormal.png */,
 				CE800950176FF39200F39974 /* CloseSelected.png */,
@@ -2151,6 +2154,7 @@
 				CE800B69176FF39E00F39974 /* project.pbxproj in Resources */,
 				CE800CE8176FF3A500F39974 /* blocks.png in Resources */,
 				CE80107917700BB100F39974 /* tructhang1.png in Resources */,
+				CEE443EE1771A33200B3E895 /* paddle.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

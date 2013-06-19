@@ -37,8 +37,13 @@ public:
 
     virtual void draw();
     virtual void ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
-    virtual void ccTouchMoved (CCTouch *touch, CCEvent *event);
+    virtual void ccTouchesMoved(cocos2d::CCSet *touches, cocos2d::CCEvent *event);
+    virtual void ccTouchesBegan(cocos2d::CCSet *touches, cocos2d::CCEvent *event);
+
     void update(float dt);
+    void prismatic();
+    void createSprite(CCPoint location);
+    void rr();
     
 private:
     b2World* world;
@@ -46,6 +51,9 @@ private:
     b2BodyDef myBodyDef;
     b2BodyDef rBodyDef;
     b2Body *body_r;
+    b2Body *groundBody;
+    b2Body *body;
+    b2MouseJoint *mouseJoint;
 };
 
 #endif // __HELLO_WORLD_H__

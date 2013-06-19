@@ -1,18 +1,11 @@
-//
-//  HelloWorldScene.cpp
-//  Box2D
-//
-//  Created by macbook_006 on 13/06/18.
-//  Copyright __MyCompanyName__ 2013年. All rights reserved.
-//
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
-//include
 using namespace cocos2d;
 using namespace CocosDenshion;
 
 #define PTM_RATIO 32
 #define DEGTORAD 0.0174532925199432957f
+
 enum {
     kTagParentNode = 1,
 };
@@ -28,9 +21,6 @@ void PhysicsSprite::setPhysicsBody(b2Body * body)
     m_pBody = body;
 }
 
-// this method will only get called if the sprite is batched.
-// return YES if the physics values (angles, position ) changed
-// If you return NO, then nodeToParentTransform won't be called.
 bool PhysicsSprite::isDirty(void)
 {
     return true;
@@ -43,26 +33,22 @@ CCAffineTransform PhysicsSprite::nodeToParentTransform(void)
 
     float x = pos.x * PTM_RATIO;
     float y = pos.y * PTM_RATIO;
-
     if ( isIgnoreAnchorPointForPosition() ) {
         x += m_obAnchorPointInPoints.x;
         y += m_obAnchorPointInPoints.y;
     }
-
     // Make matrix
     float radians = m_pBody->GetAngle();
     float c = cosf(radians);
     float s = sinf(radians);
-
     if( ! m_obAnchorPointInPoints.equals(CCPointZero) ){
         x += c*-m_obAnchorPointInPoints.x + -s*-m_obAnchorPointInPoints.y;
         y += s*-m_obAnchorPointInPoints.x + c*-m_obAnchorPointInPoints.y;
     }
-    // Rot, Translate Matrix
+    //Rot, Translate Matrix
     m_sTransform = CCAffineTransformMake( c,  s,
         -s,    c,
         x,    y );
-
     return m_sTransform;
 }
 
@@ -77,26 +63,19 @@ HelloWorld::HelloWorld()
 
     CCSpriteBatchNode *parent = CCSpriteBatchNode::create("blocks.png", 100);
     m_pSpriteTexture = parent->getTexture();
-
     addChild(parent, 0, kTagParentNode);
-
     addNewSpriteAtPosition(ccp(s.width/2, s.height/2));
 
     CCLabelTTF *label = CCLabelTTF::create("Tap screen", "Marker Felt", 32);
     addChild(label, 0);
     label->setColor(ccc3(0,0,255));
     label->setPosition(ccp( s.width/2, s.height-50));
-    
-    
-    
     CCSprite * r = CCSprite::create("tructhang1.png");
     r->setPosition(ccp(s.width/2,s.height/2));
     //r->setScaleX(10);
     r->setTag(5);
     this->addChild(r);
-    
-    // Create gol1 body
-    //b2BodyDef rBodyDef;
+
     rBodyDef.type = b2_dynamicBody;
     rBodyDef.position.Set(s.width/2/PTM_RATIO, s.height/2/PTM_RATIO);
     rBodyDef.userData = r;
@@ -105,7 +84,7 @@ HelloWorld::HelloWorld()
     rBodyDef.angularDamping = 0.0f;
     body_r = world->CreateBody(&rBodyDef);
     
-    // Create gol1 shape
+    // Create shape
     b2PolygonShape rShape;
     rShape.SetAsBox(r->getContentSize().width/2/PTM_RATIO,
                     r->getContentSize().height/PTM_RATIO/2);
@@ -116,42 +95,33 @@ HelloWorld::HelloWorld()
     rShapeDef.density = 0.1f;
     rShapeDef.friction = 0.0f;
     rShapeDef.restitution = 1.0f;
-    
     rShapeDef.filter.groupIndex = -10;
     body_r->CreateFixture(&rShapeDef);
-
     
-    // kanimi body
-    CCSprite * r1 = CCSprite::create("tructhang1.png");
-    //r1->setPosition(ccp(s.width/2,0));
-    //r->setScaleX(10);
-    r1->setTag(5);
-    this->addChild(r1);
     
-    myBodyDef.userData = r1;
-    myBodyDef.type = b2_kinematicBody;     //this will be a kinematic body
-    myBodyDef.position.Set(5, 11);     // start from left side, slightly above the static body
-    b2Body* kinematicBody = world->CreateBody(&myBodyDef);     //add body to world
+    CCSprite * r2 = CCSprite::create("paddle.png");
+    r2->setTag(8);
+    this->addChild(r2);
+    myBodyDef.userData = r2;
+    myBodyDef.type = b2_dynamicBody;
+    myBodyDef.position.Set(15, 11);
+    myBodyDef.linearDamping = 100000.0f;
+    myBodyDef.angularDamping = 100000.0f;
+    body = world->CreateBody(&myBodyDef); 
     
-    //kinematicBody->SetLinearVelocity( b2Vec2( 1, 0 ) );         //move right 1 unit per second
+    //kinematicBody->SetLinearVelocity( b2Vec2( 1, 0 ) ); 
+    //body->SetAngularVelocity(0.6* 360 * DEGTORAD );
     
-    //1 turn per second counter-clockwise
-    kinematicBody->SetAngularVelocity(0.6* 360 * DEGTORAD );
-    
-    b2PolygonShape rShape1;
-    rShape1.SetAsBox(r->getContentSize().width/2/PTM_RATIO,
-                    r->getContentSize().height/PTM_RATIO/2);
-    
-    // Create shape definition and add to body
-    b2FixtureDef rShapeDef1;
-    rShapeDef1.shape = &rShape1;
-    rShapeDef1.density = 0.1f;
-    rShapeDef1.friction = 0.0f;
-    rShapeDef1.restitution = 1.0f;
-    
-    rShapeDef1.filter.groupIndex = 10;
-    kinematicBody->CreateFixture(&rShapeDef1);
-
+    b2PolygonShape rShape2;
+    rShape2.SetAsBox(r2->getContentSize().width/2/PTM_RATIO,
+                     r2->getContentSize().height/PTM_RATIO/2);
+    b2FixtureDef rShapeDef2;
+    rShapeDef2.shape = &rShape2;
+    rShapeDef2.density = 0.1f;
+    rShapeDef2.friction = 0.8f;
+    rShapeDef2.restitution = 0.0f;
+    rShapeDef2.filter.groupIndex = 10;
+    body->CreateFixture(&rShapeDef2);
     
     scheduleUpdate();
 }
@@ -160,7 +130,6 @@ HelloWorld::~HelloWorld()
 {
     delete world;
     world = NULL;
-    
     //delete m_debugDraw;
 }
 
@@ -178,8 +147,8 @@ void HelloWorld::initPhysics()
 
     world->SetContinuousPhysics(true);
 
-//     m_debugDraw = new GLESDebugDraw( PTM_RATIO );
-//     world->SetDebugDraw(m_debugDraw);
+    //     m_debugDraw = new GLESDebugDraw( PTM_RATIO );
+    //     world->SetDebugDraw(m_debugDraw);
 
     uint32 flags = 0;
     flags += b2Draw::e_shapeBit;
@@ -189,7 +158,6 @@ void HelloWorld::initPhysics()
     //        flags += b2Draw::e_centerOfMassBit;
     //m_debugDraw->SetFlags(flags);
 
-
     // Define the ground body.
     b2BodyDef groundBodyDef;
     groundBodyDef.position.Set(0, 0); // bottom-left corner
@@ -197,7 +165,7 @@ void HelloWorld::initPhysics()
     // Call the body factory which allocates memory for the ground body
     // from a pool and creates the ground box shape (also from a pool).
     // The body is also added to the world.
-    b2Body* groundBody = world->CreateBody(&groundBodyDef);
+    groundBody = world->CreateBody(&groundBodyDef);
 
     // Define the ground box shape.
     b2EdgeShape groundBox;
@@ -222,19 +190,13 @@ void HelloWorld::initPhysics()
 
 void HelloWorld::draw()
 {
-    //
     // IMPORTANT:
     // This is only for debug purposes
     // It is recommend to disable it
-    //
     CCLayer::draw();
-
     ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
-
     kmGLPushMatrix();
-
     world->DrawDebugData();
-
     kmGLPopMatrix();
 }
 
@@ -242,7 +204,6 @@ void HelloWorld::addNewSpriteAtPosition(CCPoint p)
 {
     CCLOG("Add sprite %0.2f x %02.f",p.x,p.y);
     CCNode* parent = getChildByTag(kTagParentNode);
-    
     //We have a 64x64 sprite sheet with 4 different 32x32 images.  The following code is
     //just randomly picking one of the images
     int idx = (CCRANDOM_0_1() > .5 ? 0:1);
@@ -250,31 +211,26 @@ void HelloWorld::addNewSpriteAtPosition(CCPoint p)
     PhysicsSprite *sprite = new PhysicsSprite();
     sprite->initWithTexture(m_pSpriteTexture, CCRectMake(32 * idx,32 * idy,32,32));
     sprite->autorelease();
-    
     parent->addChild(sprite);
-    
     sprite->setPosition( CCPointMake( p.x, p.y) );
-    
     // Define the dynamic body.
     //Set up a 1m squared box in the physics world
     b2BodyDef bodyDef;
     bodyDef.type = b2_dynamicBody;
     bodyDef.position.Set(p.x/PTM_RATIO, p.y/PTM_RATIO);
-    
-    b2Body *body = world->CreateBody(&bodyDef);
-    
+    body = world->CreateBody(&bodyDef);
     // Define another box shape for our dynamic body.
     b2PolygonShape dynamicBox;
     dynamicBox.SetAsBox(.5f, .5f);//These are mid points for our 1m box
-    
+
     // Define the dynamic body fixture.
     b2FixtureDef fixtureDef;
     fixtureDef.shape = &dynamicBox;    
     fixtureDef.density =2.0f;
-    fixtureDef.friction = 0.0f;
-    fixtureDef.restitution = 1.0f;
+    fixtureDef.friction = 0.2f;
+    fixtureDef.restitution = 0.5f;
     body->CreateFixture(&fixtureDef);
-    
+
     sprite->setPhysicsBody(body);
 }
 
@@ -288,7 +244,7 @@ void HelloWorld::update(float dt)
     
     int velocityIterations = 8;
     int positionIterations = 1;
-    
+
     // Instruct the world to perform a single step of simulation. It is
     // generally best to keep the time step and iterations fixed.
     world->Step(dt, velocityIterations, positionIterations);
@@ -299,59 +255,127 @@ void HelloWorld::update(float dt)
         if (b->GetUserData() != NULL) {
             //Synchronize the AtlasSprites position and rotation with the corresponding body
             CCSprite* myActor = (CCSprite*)b->GetUserData();
+            if(myActor->getTag()==8)
+            {
+                myActor->setPosition( CCPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO) );
+            }
+            else{
             myActor->setPosition( CCPointMake( b->GetPosition().x * PTM_RATIO, b->GetPosition().y * PTM_RATIO) );
             myActor->setRotation( -1 * CC_RADIANS_TO_DEGREES(b->GetAngle()) );
-        }    
+            }
+        }
     }
+    rr();
 }
 
-void HelloWorld::ccTouchesEnded(CCSet* touches, CCEvent* event)
+void HelloWorld::ccTouchesBegan(cocos2d::CCSet *touches, cocos2d::CCEvent *event)
 {
-    //Add a new body/atlas sprite at the touched location
     CCSetIterator it;
     CCTouch* touch;
-    
-    for( it = touches->begin(); it != touches->end(); it++) 
+    for( it = touches->begin(); it != touches->end(); it++)// get all touch point
     {
         touch = (CCTouch*)(*it);
-        
         if(!touch)
-            break;
-        
+            continue;
         CCPoint location = touch->getLocationInView();
-        
         location = CCDirector::sharedDirector()->convertToGL(location);
-        
-        addNewSpriteAtPosition( location );
-        
-        
-        //b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
-        b2RevoluteJointDef jointDef;
-        b2MouseJointDef jo;
-        
-        jo.bodyA = body_r;
-        
-       // jointDef.bodyB = myBodyB;
-        
-      //  jointDef.anchorPoint = myBodyA->GetCenterPosition();
-        
-   //     b2RevoluteJoint* joint = (b2RevoluteJoint*)myWorld->CreateJoint(&jointDef);
-      
+        b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
+        {
+            b2MouseJointDef md;
+            md.bodyA = groundBody;
+            md.bodyB = body;
+            md.target = locationWorld;
+            md.collideConnected = true;
+            md.maxForce = 10000.0f * body->GetMass();
+            md.dampingRatio = 0;
+            md.frequencyHz =100000;
+            mouseJoint = (b2MouseJoint *)world->CreateJoint(&md);
+            body->SetAwake(true);
+        }
     }
 }
 
-void HelloWorld::ccTouchMoved (CCTouch *touch, CCEvent *event)
+void HelloWorld::ccTouchesMoved(cocos2d::CCSet *touches, cocos2d::CCEvent *event)
 {
-        CCPoint touchLoc = this->getParent()->convertTouchToNodeSpace(touch);
+    CCSetIterator it;
+    CCTouch* touch;
+    for( it = touches->begin(); it != touches->end(); it++)// get all touch point
+    {
+        touch = (CCTouch*)(*it);
+        if(!touch)
+            continue;
+        CCPoint location = touch->getLocationInView();
+        location = CCDirector::sharedDirector()->convertToGL(location);
         
-            //CCRect touchRect = CCRect(touchLoc.x, touchLoc.y, 1, 1);
-        myBodyDef.position.Set(touchLoc.x/PTM_RATIO, touchLoc.y/PTM_RATIO);
+        b2Vec2 locationWorld = b2Vec2(location.x/PTM_RATIO, location.y/PTM_RATIO);
+        mouseJoint->SetTarget(locationWorld);
+    }
     
-    
-                        
-
 }
 
+void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
+{
+    mouseJoint->GetBodyA()->GetWorld()->DestroyJoint(mouseJoint);
+}
+
+void HelloWorld::prismatic()
+{
+}
+
+void HelloWorld::createSprite(CCPoint location)
+{
+    CCSprite * r = CCSprite::create("tructhang1.png");
+    r->setTag(8);
+    this->addChild(r);
+    myBodyDef.userData = r;
+    myBodyDef.type = b2_kinematicBody;     //this will be a kinematic body
+    myBodyDef.position.Set(location.x/PTM_RATIO,location.y/PTM_RATIO);     // start from left side
+    body = world->CreateBody(&myBodyDef);
+    
+    //kinematicBody->SetLinearVelocity( b2Vec2( 1, 0 ) );         //move right 1 unit per second
+    
+    //1 turn per second counter-clockwise
+    body->SetAngularVelocity(0.6* 360 * DEGTORAD );
+    
+    b2PolygonShape rShape2;
+    rShape2.SetAsBox(r->getContentSize().width/2/PTM_RATIO,
+                     r->getContentSize().height/PTM_RATIO/2);
+    
+    // Create shape definition and add to body
+    b2FixtureDef rShapeDef2;
+    rShapeDef2.shape = &rShape2;
+    rShapeDef2.density = 0.1f;
+    rShapeDef2.friction = 0.0f;
+    rShapeDef2.restitution = 1.0f;
+    
+    rShapeDef2.filter.groupIndex = 10;
+    body->CreateFixture(&rShapeDef2);
+}
+
+void HelloWorld::rr()
+{
+    
+    b2Vec2 anchor1 = body->GetWorldCenter();
+    
+    b2Vec2 anchor2 = body_r->GetWorldCenter();
+    
+    b2Vec2 groundAnchor1(body->GetPosition().x * PTM_RATIO, body->GetPosition().y * PTM_RATIO + 1.0f);
+    
+    b2Vec2 groundAnchor2(body_r->GetPosition().x * PTM_RATIO, body_r->GetPosition().y * PTM_RATIO + 1.0f);
+    
+    float32 ratio = 1.0f;
+    b2PulleyJointDef jointDef;
+    jointDef.Initialize(body, body_r, groundAnchor1, groundAnchor2, anchor1, anchor2, ratio);
+    world->CreateJoint(&jointDef);
+    
+    //body->set
+    
+
+    //float32 GetLengthA(30);
+    //float32 GetLengthB(30);
+    //body->SetAwake(true);
+    //jointDef.
+}
 
 CCScene* HelloWorld::scene()
 {
@@ -362,6 +386,5 @@ CCScene* HelloWorld::scene()
     CCLayer* layer = new HelloWorld();
     scene->addChild(layer);
     layer->release();
-    
     return scene;
 }
